@@ -1,0 +1,20 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "description": "A3 Architekten server app with express",
+  "main": "server.js",
+  "author": "Madalena Goncalves",
+  "license": "MIT",
+  "url": "https://github.com/MadalenaGoncalves/a3-be",
+  "scripts": {
+    "start": "./node_modules/nodemon/bin/nodemon.js src/app.js"
+  },
+  "dependencies": {
+    "body-parser": "^1.18.2",
+    "express": "^4.16.3",
+    "morgan": "^1.9.0"
+  },
+  "devDependencies": {
+    "nodemon": "^1.17.2"
+  }
+}
