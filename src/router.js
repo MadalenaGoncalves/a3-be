@@ -12,17 +12,17 @@ function handleResponse(res, result) {
 
 
 // RESOURCES ACCESSED BY THE WEBSITE
-router.get('/project', async function(req, res) {
+router.get('/projects', async function(req, res) {
   const result = await api.projects.getAll();
   handleResponse(res, result);
 });
 
-router.get('/project/:id', async function(req, res) {
+router.get('/projects/:id', async function(req, res) {
   const results = await api.projects.getOne(req.params.id);
   handleResponse(res, results);
 });
 
-router.get('/project/:id/images', async function(req, res) {
+router.get('/projects/:id/images', async function(req, res) {
   const result = await api.images.getAllByProjectId(req.params.projectId);
   handleResponse(res, result);
 });
@@ -115,7 +115,7 @@ router.patch('/admin/image/:id', async function(req, res) {
 
 
 router.get('/admin/contact/:id', async function(req, res) {
-  const result = await api.images.getOne(req.params.id);
+  const result = await api.contacts.getOne(req.params.id);
   handleResponse(res, result);
 });
 
