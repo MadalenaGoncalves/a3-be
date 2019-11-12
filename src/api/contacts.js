@@ -46,27 +46,32 @@ export function create(data) {
     return err;
   }
 
-  return get(query, errorHanlder);
+  return post(query, errorHanlder);
 };
 
-export function update() {
+export function update(id, data) {
   // TODO protect against sql injection
-  const fields = ['department', 'name', 'address', 'postcode', 'city', 'phone', 'fax', 'url'];
+  // TODO validate data
+  const fields = ['department', 'name', 'address', 'postcode', 
+  'city', 'phone', 'fax', 'url'];
+  
   let values = [];
-  fields.forEach (function(f) {
+  fields.forEach (function (f) {
     if (data[f])
       values.push(`${f} = "${data[f]}"`)
   });
-  const valuesAsStr = fields.join(',');
+  // values.push(`updated_at = ${new Date}`);
+  const valuesAsStr = values.join(',');
 
   const query = 
-    `UPDATE image
-     SET ${valuesAsStr},
+    `UPDATE contact
+     SET ${valuesAsStr}
      WHERE id = ${id}`;
-    //  updated_at = 
+     // updated_at
 
+  console.log('query', query);
   const errorHanlder = function (err) {
-    console.log("ERROR @contacts.update()", err);
+    console.log("ERROR @contact.update()");
     return err;
   }
 
