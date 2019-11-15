@@ -3,7 +3,7 @@
 import 'dotenv/config';
 import mysql from 'mysql';
 
-const options = {
+let options = {
   database: process.env.DB_NAME,
   host: process.env.DB_HOST,
   user: process.env.DB_USER,
