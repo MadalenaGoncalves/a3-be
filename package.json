@@ -8,7 +8,7 @@
   "license": "MIT",
   "url": "https://github.com/MadalenaGoncalves/a3-be",
   "engines": {
-    "node": "11x"
+    "node": ">=8.0.0 <11.0.0"
   },
   "scripts": {
     "##start": "node src/server.js",
