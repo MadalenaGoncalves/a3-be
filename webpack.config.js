@@ -12,13 +12,13 @@ const config = {
   // Entry
   entry: [
     '@babel/polyfill',
-    './src/server.js',
+    './src/index.js',
   ],
   // Output
   output: {
     //publicPath: '/dist',
-    path: path.join(__dirname, 'dist'),
-    filename: 'bundle.js'
+    path: path.join(__dirname, 'build'),
+    filename: 'index.js'
   },
   // Ignore all modules in node_modules
   externals: [nodeExternals()],
@@ -47,7 +47,7 @@ const config = {
   target: 'node',
   // Dev server
   devServer: {
-    contentBase: path.join(__dirname, 'dist'),
+    contentBase: path.join(__dirname, 'build'),
     // do not print bundle build stats
     noInfo: false,
     // embed the webpack-dev-server runtime into the bundle

@@ -2,12 +2,14 @@
 
 # dependencies
 /node_modules
+build
 dist
 
 # testing
 /coverage
 *.log*
 *.txt
+*.sql
 
 # production
 /build

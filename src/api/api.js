@@ -16,7 +16,7 @@ export function get(query, errorHandler) {
       // console.log('GET RESULTS', results);
       return resolve({
         status: STATUS_SUCCESS,
-        error: null,
+        // error: null,
         data: results
       });
     });
@@ -34,7 +34,7 @@ export function post(query, errorHandler) {
       
       return resolve({
         status: STATUS_CREATED,
-        error: null,
+        // error: null,
         data: results
       });
     });

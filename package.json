@@ -2,7 +2,7 @@
   "name": "server",
   "version": "1.0.0",
   "description": "A3 Architekten server app with express",
-  "#main": "src/server.js",
+  "#main": "src/index.js",
   "main": "",
   "author": "Madalena Goncalves",
   "license": "MIT",
@@ -11,20 +11,17 @@
     "node": ">=8.0.0 <11.0.0"
   },
   "scripts": {
-    "##start": "node src/server.js",
-    "##build": "rm -rf dist/* && webpack",
     "##dev": "nodemon dist/bundle.js",
     "###dev": "nodemon dist/bundle.js & webpack-dev-server --progress --profile --colors",
     "###dev1": "webpack-dev-server --progress --profile --colors",
-    "test": "echo \"Error no test specified\" && exit 1",
     "dev": "npm-run-all --parallel watch:server watch:build",
     "watch:build": "webpack --watch",
     "watch:server": "nodemon \"./dist/bundle.js\" --watch \"./dist\"",
+    "test": "echo \"Error no test specified\" && exit 1",
     "clean": "rm -rf build && mkdir build",
-    "build-babel": "babel -d ./build ./src/server.js -s",
-    "build": "npm run clean && npm run build-babel",
-    "start": "babel-node ./src/server.js",
-    "prestart": "npm run -s build"
+    "build": "npm run clean && webpack",
+    "prestart": "npm run build",
+    "start": "node ./build/index.js"
   },
   "dependencies": {
     "@babel/polyfill": "^7.0.0",
