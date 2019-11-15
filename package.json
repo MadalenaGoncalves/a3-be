@@ -7,6 +7,9 @@
   "author": "Madalena Goncalves",
   "license": "MIT",
   "url": "https://github.com/MadalenaGoncalves/a3-be",
+  "engines": {
+    "node": "11x"
+  },
   "scripts": {
     "##start": "node src/server.js",
     "##build": "rm -rf dist/* && webpack",
