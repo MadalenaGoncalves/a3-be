@@ -1,26 +1,33 @@
-import { get, post } from './api';
+import { get, post, query } from './api';
+
+export function queryAllByProjectId(projectId) {
+  const q = 
+    `SELECT i.id, i.caption, i.author, i.filename, i.fileformat, i.is_photo
+       FROM image i
+       LEFT JOIN project_image pi ON i.id = pi.image_id
+      WHERE pi.project_id = ${projectId}`;
+
+  return query(q);
+}
 
 export function getAllByProjectId(projectId) {
-  const query = 
-    `SELECT i.id, i.caption, i.author, i.filename, i.fileformat
-       FROM image i
-      WHERE i.id in (
-        SELECT pi.image_id
-        FROM project_image pi
-        WHERE pi.project_id = ${projectId}
-       )`;
+  const q = 
+  `SELECT i.id, i.caption, i.author, i.filename, i.fileformat, i.is_photo
+     FROM image i
+     LEFT JOIN project_image pi ON i.id = pi.image_id
+    WHERE pi.project_id = ${projectId}`;
 
   const errorHanlder = function (err) {
     console.log("ERROR @images.getAllByProjectId()", err);
     return err;
   }
 
-  return get(query, errorHanlder);
+  return get(q, errorHanlder);
 }
 
 export function getOne(id) {
-  const query = 
-    `SELECT i.id, i.caption, i.author, i.filename, i.fileformat
+  const q = 
+    `SELECT i.id, i.caption, i.author, i.filename, i.fileformat, i.is_photo
       FROM image i
       WHERE id = ${id}`;
 
@@ -29,12 +36,12 @@ export function getOne(id) {
     return err;
   }
 
-  return get(query, errorHanlder);
+  return get(q, errorHanlder);
 }
 
 export function getAll() {
-  const query = 
-    `SELECT i.id, i.caption, i.author, i.filename, i.fileformat
+  const q = 
+    `SELECT i.id, i.caption, i.author, i.filename, i.fileformat, i.is_photo
        FROM image i`;
 
   const errorHanlder = function (err) {
@@ -42,19 +49,20 @@ export function getAll() {
     return err;
   }
 
-  return get(query, errorHanlder);
+  return get(q, errorHanlder);
 }
 
 export function create(data) {
   // TODO protect against sql injection
-  const query = 
+  const q = 
     `INSERT INTO image
-      (caption, author, filename, fileformat)
+      (caption, author, filename, fileformat, is_photo)
      VALUES (
       "${data.caption}",
       "${data.author}",
       "${data.filename}",
-      "${data.fileformat}"
+      "${data.fileformat}",
+      ${data.is_photo}
     )`;
 
 
@@ -63,12 +71,12 @@ export function create(data) {
     return err;
   }
 
-  return post(query, errorHanlder);
+  return post(q, errorHanlder);
 }
 
 export function linkToProject(imageId, projectId) {
   // TODO protect against sql injection
-  const query = 
+  const q = 
     `INSERT INTO project_image
       (project_id, image_id)
      VALUES (${projectId}, ${imageId})`;
@@ -78,12 +86,12 @@ export function linkToProject(imageId, projectId) {
     return err;
   }
 
-  return get(query, errorHanlder);
+  return get(q, errorHanlder);
 }
 
 export function unlinkFromProject(imageId, projectId) {
   // TODO protect against sql injection
-  const query = 
+  const q = 
     `DELETE FROM project_image
      WHERE project_id = ${projectId} AND image_id = ${imageId}`;
 
@@ -92,7 +100,7 @@ export function unlinkFromProject(imageId, projectId) {
     return err;
   }
 
-  return get(query, errorHanlder);
+  return get(q, errorHanlder);
 }
 
 export function update(id, data) {
@@ -103,10 +111,13 @@ export function update(id, data) {
     if (data[col])
       values.push(`${col} = ${data[col]}`)
   }
+  if (!!data['is_photo'])
+    values.push(data['is_photo'])
+
   // values.push(`updated_at = ${new Date}`);
   const valuesAsStr = fields.join(',');
 
-  const query = 
+  const q = 
     `UPDATE image
      SET ${valuesAsStr}
      WHERE id = ${id}`;
@@ -117,5 +128,5 @@ export function update(id, data) {
     return err;
   }
 
-  return get(query, errorHanlder);
+  return get(q, errorHanlder);
 }

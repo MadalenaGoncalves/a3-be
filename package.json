@@ -16,7 +16,7 @@
     "###dev1": "webpack-dev-server --progress --profile --colors",
     "dev": "npm-run-all --parallel watch:server watch:build",
     "watch:build": "webpack --watch",
-    "watch:server": "nodemon \"./dist/bundle.js\" --watch \"./dist\"",
+    "watch:server": "nodemon \"./build/index.js\" --watch \"./build\"",
     "test": "echo \"Error no test specified\" && exit 1",
     "clean": "rm -rf build && mkdir build",
     "build": "npm run clean && webpack",

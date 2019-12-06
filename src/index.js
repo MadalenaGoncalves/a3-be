@@ -8,14 +8,7 @@ import cors from 'cors';
 
 import router from './router';
 
-
-let env;
-if (process.env.NODE_ENV !== 'production') {
-  env = dotenv.config();
-	if (env.error) {
-	  throw env.error;
-	}
-}
+let env = dotenv.config();
 
 const app = express();
 
@@ -24,8 +17,6 @@ app.use(morgan('dev')); // logging middleware: https://github.com/expressjs/morg
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-const staticMiddleware = express.static('dist');
-app.use(staticMiddleware);
 
 // cors
 const originsWhitelist = [
@@ -42,7 +33,10 @@ const corsOptions = {
 app.use(cors(corsOptions));
 
 // Routes
-app.use('/', router);
+app.use('/api/', router);
+app.use('/thumbnail', express.static('public/thumbnails'));
+app.use('/image', express.static('public/images'));
+
 app.use(function (req, res, next) {
 	console.log('404 - Client tried to get [' + req.url + ']');
   res.status(404).send('Not found');

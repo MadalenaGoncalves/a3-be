@@ -1,34 +1,25 @@
-import { get, post } from './api';
+import { get, post, patch } from './api';
 
-export function getAll() {
+export async function getAll() {
   const query = 
     `SELECT id, department, name, address, postcode, city, phone, fax, url
      FROM contact`;
 
-  const errorHanlder = function (err) {
-    console.log("ERROR @contacts.getAll()", err);
-    return err;
-  }
-
-  return get(query, errorHanlder);
+  return get(query).catch(err => err);
 };
 
-export function getOne(id) {
+export async function getOne(id) {
   const query = 
     `SELECT id, department, name, address, postcode, city, phone, fax, url
      FROM contact
      WHERE id = ${id}`;
 
-  const errorHanlder = function (err) {
-    console.log("ERROR @contacts.getOne()", err);
-    return err;
-  }
-
-  return get(query, errorHanlder);
+    return get(query).catch(err => err);
 };
 
-export function create(data) {
-  `INSERT INTO contact
+export async function create(data) {
+  const query = 
+    `INSERT INTO contact
       (department, name, address, postcode, city, phone, fax, url)
      VALUES
      ${data.department},
@@ -41,17 +32,10 @@ export function create(data) {
      ${data.url}`;
      // created_at
 
-  const errorHanlder = function (err) {
-    console.log("ERROR @contacts.create()", err);
-    return err;
-  }
-
-  return post(query, errorHanlder);
+  return post(query).catch(err => err);
 };
 
-export function update(id, data) {
-  // TODO protect against sql injection
-  // TODO validate data
+export async function update(id, data) {
   const fields = ['department', 'name', 'address', 'postcode', 
   'city', 'phone', 'fax', 'url'];
   
@@ -69,14 +53,6 @@ export function update(id, data) {
      WHERE id = ${id}`;
      // updated_at
 
-  console.log('query', query);
-  const errorHanlder = function (err) {
-    console.log("ERROR @contact.update()");
-    return err;
-  }
-
-  return get(query, errorHanlder);
+  return patch(query).catch(err => err);
 };
 
-// export function enable()
-// export function disable()
