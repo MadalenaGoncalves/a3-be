@@ -21,7 +21,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 // cors
 const originsWhitelist = [
   'http://localhost:3000',
-  // 'http://www.myproductionurl.com'
+  'https://a3-architekten-client.herokuapp.com'
 ];
 const corsOptions = {
   origin: function(origin, callback) {
