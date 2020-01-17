@@ -1,132 +1,131 @@
-import { get, post, query } from './api';
-
-export function queryAllByProjectId(projectId) {
-  const q = 
-    `SELECT i.id, i.caption, i.author, i.filename, i.fileformat, i.is_photo
-       FROM image i
-       LEFT JOIN project_image pi ON i.id = pi.image_id
-      WHERE pi.project_id = ${projectId}`;
-
-  return query(q);
-}
-
-export function getAllByProjectId(projectId) {
-  const q = 
-  `SELECT i.id, i.caption, i.author, i.filename, i.fileformat, i.is_photo
-     FROM image i
-     LEFT JOIN project_image pi ON i.id = pi.image_id
-    WHERE pi.project_id = ${projectId}`;
-
-  const errorHanlder = function (err) {
-    console.log("ERROR @images.getAllByProjectId()", err);
-    return err;
-  }
-
-  return get(q, errorHanlder);
-}
-
 export function getOne(id) {
   const q = 
-    `SELECT i.id, i.caption, i.author, i.filename, i.fileformat, i.is_photo
-      FROM image i
-      WHERE id = ${id}`;
-
-  const errorHanlder = function (err) {
-    console.log("ERROR @image.getOne()");
-    return err;
-  }
-
-  return get(q, errorHanlder);
+    `SELECT i.id, i.caption, i.filename, i.fileformat, i.is_photo
+    FROM image i
+    WHERE id = ${id}`;
+  return q;
 }
 
-export function getAll() {
+export function getOneThumbnail(projectId) {
   const q = 
-    `SELECT i.id, i.caption, i.author, i.filename, i.fileformat, i.is_photo
-       FROM image i`;
+    `SELECT i.id, i.filename, i.fileformat
+    FROM image i
+    LEFT JOIN project p ON p.image = i.id
+    WHERE p.id = ${projectId}`;
+  return q;
+}
 
-  const errorHanlder = function (err) {
-    console.log("ERROR @image.getAll()");
-    return err;
-  }
+const sql_GetAllByProjectAndIsPhoto = 
+`SELECT i.id, i.caption, i.filename, i.fileformat, i.weight
+FROM image i
+LEFT JOIN project_image pi ON i.id = pi.image_id
+WHERE pi.project_id = {projectId}
+AND i.is_photo = {isPhoto}
+ORDER BY CASE WHEN i.weight IS NULL THEN 1 ELSE 0 END, i.weight`;
 
-  return get(q, errorHanlder);
+export function getAllPhotosByProjectId(projectId) {
+  const q = sql_GetAllByProjectAndIsPhoto
+    .replace('{projectId}', projectId)
+    .replace('{isPhoto}', 1);
+  return q;
+}
+
+export function getAllDesignsByProjectId(projectId) {
+  const q = sql_GetAllByProjectAndIsPhoto
+    .replace('{projectId}', projectId)
+    .replace('{isPhoto}', 0);
+  return q;
+}
+
+export function createMinimal(data) {
+  const q = 
+    `INSERT INTO image
+      (filename, fileformat)
+     VALUES (
+      "${data.filename}",
+      "${data.fileformat}"
+    )`;
+  return q;
 }
 
 export function create(data) {
-  // TODO protect against sql injection
   const q = 
     `INSERT INTO image
-      (caption, author, filename, fileformat, is_photo)
+      (caption, filename, fileformat, is_photo)
      VALUES (
       "${data.caption}",
-      "${data.author}",
       "${data.filename}",
       "${data.fileformat}",
       ${data.is_photo}
     )`;
-
-
-  const errorHanlder = function (err) {
-    console.log("ERROR @image.create()");
-    return err;
-  }
-
-  return post(q, errorHanlder);
-}
-
-export function linkToProject(imageId, projectId) {
-  // TODO protect against sql injection
-  const q = 
-    `INSERT INTO project_image
-      (project_id, image_id)
-     VALUES (${projectId}, ${imageId})`;
-
-  const errorHanlder = function (err) {
-    console.log("ERROR @image.update()");
-    return err;
-  }
-
-  return get(q, errorHanlder);
-}
-
-export function unlinkFromProject(imageId, projectId) {
-  // TODO protect against sql injection
-  const q = 
-    `DELETE FROM project_image
-     WHERE project_id = ${projectId} AND image_id = ${imageId}`;
-
-  const errorHanlder = function (err) {
-    console.log("ERROR @image.update()");
-    return err;
-  }
-
-  return get(q, errorHanlder);
+  return q;
 }
 
 export function update(id, data) {
-  // TODO protect against sql injection
-  const columns = ['caption', 'author', 'filename', 'fileformat'];
+  const fields = ['caption', 'filename', 'fileformat'];
+  
   let values = [];
-  for (col in columns) {
-    if (data[col])
-      values.push(`${col} = ${data[col]}`)
-  }
+  fields.forEach (function (f) {
+    if (data[f])
+      values.push(`${f} = "${data[f]}"`)
+  });
+
   if (!!data['is_photo'])
     values.push(data['is_photo'])
 
-  // values.push(`updated_at = ${new Date}`);
-  const valuesAsStr = fields.join(',');
+  const valuesAsStr = values.join(',');
 
   const q = 
     `UPDATE image
      SET ${valuesAsStr}
      WHERE id = ${id}`;
-     // updated_at
 
-  const errorHanlder = function (err) {
-    console.log("ERROR @image.update()");
-    return err;
-  }
+  return q;
+};
 
-  return get(q, errorHanlder);
+
+// export function linkToProject(imageId, projectId) {
+//   const q = 
+//     `INSERT INTO project_image
+//       (project_id, image_id)
+//      VALUES (${projectId}, ${imageId})`;
+
+//   const errorHandler = function (err) {
+//     console.log("ERROR @image.update()");
+//     return err;
+//   }
+
+//   return get(q, errorHandler);
+// }
+
+export function deleteOne(id) {
+  const q = 
+    `DELETE FROM image
+     WHERE id = ${id}`;
+  return q;
+}
+
+export function deleteAllByProjectId(projectId) {
+  const q = 
+    `DELETE FROM image
+     WHERE id in (
+       SELECT p.image
+         FROM project p
+        WHERE p.id = ${projectId}
+        UNION ALL
+        SELECT pi.image_id
+          FROM project_image pi
+          WHERE pi.project_id = ${projectId}
+     )`;
+  return q;
+}
+
+export function deleteOneByContactId(contactId) {
+  const q = 
+    `DELETE FROM image
+     WHERE id in (
+       SELECT c.image
+         FROM contact c
+        WHERE c.id = ${contactId})`;
+  return q;
 }
