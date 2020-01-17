@@ -5,6 +5,7 @@ import bodyParser from 'body-parser';
 import morgan from 'morgan';
 import dotenv from 'dotenv';
 import cors from 'cors';
+import fileupload from 'express-fileupload';
 
 import router from './router';
 
@@ -16,7 +17,7 @@ const app = express();
 app.use(morgan('dev')); // logging middleware: https://github.com/expressjs/morgan
 app.use(bodyParser.json());
 app.use(bodyParser.urlencoded({ extended: true }));
-
+app.use(fileupload()); // handles parsing of file uploads
 
 // cors
 const originsWhitelist = [
