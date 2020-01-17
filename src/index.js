@@ -35,8 +35,8 @@ app.use(cors(corsOptions));
 
 // Routes
 app.use('/api/', router);
-app.use('/thumbnail', express.static('public/thumbnails'));
-app.use('/image', express.static('public/images'));
+app.use('/thumbnail', express.static(process.env.PATH_THUMBNAILS));
+app.use('/image', express.static(process.env.PATH_IMAGES));
 
 app.use(function (req, res, next) {
 	console.log('404 - Client tried to get [' + req.url + ']');
