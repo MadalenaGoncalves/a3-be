@@ -47,6 +47,14 @@ export function getAllDesignsByProjectId(projectId) {
   return q;
 }
 
+export function getOneByContactId(contactId) {
+  const q = 
+    `SELECT i.id, i.filename, i.fileformat
+    FROM image i
+    LEFT JOIN contact c on c.image = i.id
+    WHERE c.id = ${contactId}`;
+}
+
 export function createMinimal(data) {
   const q = 
     `INSERT INTO image

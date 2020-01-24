@@ -125,16 +125,29 @@ export async function createProject(req) {
 
 export async function createContact(req) {
   try {
-    const image = await query(images.createMinimal(req.body.image));
     const contactData = req.body.contact;
-    contactData.image = image.insertId;
-    const contact = await query(contacts.create(contactData));
+
+    if (!contactData) {
+      return handleNotModified();
+    }
+
+    const imageData = req.body.image;
+    let createdImage;
+    if (imageData) {
+      createdImage = await query(images.createMinimal(req.body.image));
+      contactData.image = createdImage.insertId;
+    }
+
+    const createdContact = await query(contacts.create(contactData));
 
     const json = {};
     json.status = HttpStatus.CREATED;
-    json.data = {
-      contactId: contact.insertId,
-      imageId: image.insertId,
+    json.data = {};
+    if (createdProject) {
+      json.data.contactId = createdContact.insertId;
+    }
+    if (createdImage) {
+      json.data.imageId = createdImage.insertId;
     }
     return json;
   } catch (err) {
@@ -255,11 +268,17 @@ export async function deleteProject(req) {
   }
 }
 
-// TODO delete also image from fs
 export async function deleteContact(req) {
+  if (!req.params.id) {
+    return handleNotModified();
+  }
+
   try {
-    await query(images.deleteOneByContactId(req.params.id));
-    await query(contacts.deleteOne(req.params.id));
+    const { id } = req.params;
+    const imageData = await query(images.getOneByContactId(id));
+    fileUtils.deleteFileById(`${imageData.filename}.${imageData.fileformat}`);
+    await query(images.deleteOneByContactId(id));
+    await query(contacts.deleteOne(id));
     
     const json = {};
     json.status = HttpStatus.OK;
