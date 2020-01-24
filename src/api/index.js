@@ -2,41 +2,13 @@
 
 import HttpStatus from 'http-status-codes';
 
-import Errors from '../errors';
-
 import query from './query';
 import * as contacts from './contacts';
 import * as images from './images';
 import * as projects from './projects';
-import * as fileUtils from './fileUtils';
+import * as fileUtils from '../utils/fileUtils';
+import { handleError, handleNotModified } from '../utils/responseUtils';
 
-function handleSqlError(error) {
-  const json = {};
-  json.status = HttpStatus.INTERNAL_SERVER_ERROR;
-  json.error = {};
-  json.error.code = error.code;
-  json.error.message = error.sqlMessage;
-  return json;
-}
-function handleError(code, message) {
-  const json = {};
-  json.status = code;
-  json.error = {};
-  json.error.code = code;
-  json.error.message = message;
-  return json;
-
-  // if (err instanceof Errors.BadRequest)
-  //   return res.status(HttpStatus.BAD_REQUEST).send({ message: err.message }); // 400
-  // if (err instanceof Errors.Forbidden)
-  //   return res.status(HttpStatus.FORBIDDEN).send({ message: err.message }); // 403
-  // if (err instanceof Errors.NotFound)
-  //   return res.status(HttpStatus.NOT_FOUND).send({ message: err.message }); // 404
-  // if (err instanceof Errors.UnprocessableEntity)
-  //   return res.status(HttpStatus.UNPROCESSABLE_ENTITY).send({ message: err.message }); // 422
-  // console.log(err);
-  // return res.status(HttpStatus.INTERNAL_SERVER_ERROR).send({ error: err, message: err.message });
-}
 
 export async function getAllProjectsWithThumbnails() {
   try {
@@ -47,7 +19,7 @@ export async function getAllProjectsWithThumbnails() {
 
     return json;
   } catch (err) {
-    return handleSqlError(err);
+    return handleError(err);
   }
 }
 
@@ -85,7 +57,7 @@ export async function getOneProjectWithRelations(req) {
     }
     return json;
   } catch(err) {
-    return handleSqlError(err);
+    return handleError(err);
   }
 }
 
@@ -98,7 +70,7 @@ export async function getAllContactsWithPhoto() {
 
     return json;
   } catch (err) {
-    return handleSqlError(err);
+    return handleError(err);
   }
 }
 
@@ -111,7 +83,7 @@ export async function getOneContactWithPhoto(req) {
 
     return json;
   } catch (err) {
-    return handleSqlError(err);
+    return handleError(err);
   }
 }
 
@@ -131,7 +103,7 @@ export async function createProject(req) {
     }
     return json;
   } catch (err) {
-    return handleSqlError(err);
+    return handleError(err);
   }
 }
 
@@ -150,7 +122,7 @@ export async function createContact(req) {
     }
     return json;
   } catch (err) {
-    return handleSqlError(err);
+    return handleError(err);
   }
 }
 
@@ -200,11 +172,7 @@ export async function updateContact(req) {
     json.status = !imageData && !contactData ? HttpStatus.NOT_MODIFIED : HttpStatus.OK;
     return json;
   } catch (err) {
-    if (err.sql) {
-      handleSqlError(err);
-    } else {
-      return handleError(HttpStatus.INTERNAL_SERVER_ERROR, err);
-    }
+    return handleError(err);
   }
 }
 
@@ -218,7 +186,7 @@ export async function deleteProject(req) {
     json.status = HttpStatus.OK;
     return json;
   } catch (err) {
-    return handleSqlError(err);
+    return handleError(err);
   }
 }
 
@@ -232,7 +200,7 @@ export async function deleteContact(req) {
     json.status = HttpStatus.OK;
     return json;
   } catch (err) {
-    return handleSqlError(err);
+    return handleError(err);
   }
 }
 

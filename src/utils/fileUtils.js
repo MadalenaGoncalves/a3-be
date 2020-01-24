@@ -6,7 +6,7 @@ const PATH_ROOT = process.cwd();
 
 function deleteDir(path, id) {
   try {
-    const fullpath = PATH_ROOT + path + id;  
+    const fullpath = PATH_ROOT + '/' + path + id;  
     if (fs.existsSync(fullpath)) {
       fs.rmdirSync(fullpath);
     }
@@ -25,7 +25,7 @@ export function deleteFileById(id) {
 }
 
 export function saveFile(file, id) {
-  const path = PATH_ROOT + process.env.PATH_IMAGES + file.name;
+  const path = PATH_ROOT + '/' + process.env.PATH_IMAGES + file.name;
   file.mv(path, (error) => {
     if (error) {
       throw error;
