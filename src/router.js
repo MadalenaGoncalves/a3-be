@@ -47,51 +47,24 @@ router.post('/contacts', async function(req, res) {
 });
 
 
-// // PATCH
-// -- aqui tenho de validar primeiro se tenho dados para a imagem e fazer qq coisa com isso
-// router.patch('/projects/:id', async function(req, res) {
-//   console.log('@patch project', req.params.id, req.body);
-//   const result = await api.projects.update(req.params.id, req.body);
-//   console.log('@patch after', result);
-//   handleResponse(res, result);
-// });
 
 router.patch('/contacts/:id', async function(req, res) {
   const result = await api.updateContact(req);
   handleResponse(res, result);
 });
 
-// router.patch('/images/:id', async function(req, res) {
-//   const result = await api.images.update(req.params.id, req.body);
-//   handleResponse(res, result);
-// });
-
 
 // DELETE
 router.delete('/projects/:id', async function(req, res) {
-  // handle delete from filesystem
   const result = await api.deleteProject(req);
   handleResponse(res, result);
 });
 
 router.delete('/contacts/:id', async function(req, res) {
-  // handle delete from filesystem
   const result = await api.deleteContact(req);
   handleResponse(res, result);
 });
 
-router.post('/test/fileupload', async function(req, res) {
-  // handle delete from filesystem
-  await api.fileUpload(req);
-  res.status(200);
-  res.send("ok");
-});
-router.get('/test/filedelete', async function(req, res) {
-  // handle delete from filesystem
-  await api.fileDelete(req);
-  res.status(200);
-  res.send("ok");
-});
 
 // // AUTH
 // router.post('/login', async function(req, res) {

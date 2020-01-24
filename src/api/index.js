@@ -204,52 +204,17 @@ export async function deleteContact(req) {
   }
 }
 
-// // TODO
-// export async function login(req) {
-//   const json = {};
-//     json.status = HttpStatus.OK;
-//     return json;
-// }
-// // TODO
-// export async function logout(req) {
-//   const json = {};
-//   json.status = HttpStatus.OK;
-//   return json;
-// }
 
-export async function fileUpload(file, filename, id) {
-  try {
-    const image = req.files.image;
-    const id = req.body.imageId
-    // const path = process.cwd() + '/public/images/' + image.name;
-
-    // image.mv(path, (error) => {
-    //   if (error) {
-    //     handleFileError(error);
-    //   }
-
-    //   // handle thumbnail generation and add to the paths
-  
-    //   const json = {};
-    //   json.status = HttpStatus.OK;
-    //   json.data = ['/images' + image.name];
-    //   return json;
-    // });
-  } catch (err) {
-    console.log("error", err);
-  }
-}
-
-export async function fileDelete(req) {
-  try {
-    fileUtils.deleteFileById(req.body.imageId);
-    
-    const json = {};
+// AUTH
+// TODO
+export async function login(req) {
+  const json = {};
     json.status = HttpStatus.OK;
-    json.data = req.body.filename;
     return json;
-  } catch (err) {
-    return handleError(HttpStatus.INTERNAL_SERVER_ERROR, err);
-  }
 }
-
+// TODO
+export async function logout(req) {
+  const json = {};
+  json.status = HttpStatus.OK;
+  return json;
+}
