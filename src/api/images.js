@@ -15,6 +15,16 @@ export function getOneThumbnail(projectId) {
   return q;
 }
 
+export function getAllFileNamesByProjectId(projectId) {
+  const q = 
+    `SELECT CONCAT(i.filename, ".", i.fileformat) id
+    FROM image i
+    LEFT JOIN project p ON p.image = i.id
+    WHERE p.id = ${projectId}`;
+
+  return q;
+}
+
 const sql_GetAllByProjectAndIsPhoto = 
 `SELECT i.id, i.caption, i.filename, i.fileformat, i.weight
 FROM image i

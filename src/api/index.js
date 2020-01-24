@@ -90,16 +90,32 @@ export async function getOneContactWithPhoto(req) {
 // POST
 export async function createProject(req) {
   try {
-    const image = await query(images.createMinimal(req.body.image));
-    const projectData = req.body.project;
-    projectData.image = image.insertId;
-    const project = await query(projects.create(projectData));
+    const projectData = req.body.project || undefined;
+    if (!projectData) {
+      return handleNotModified();
+    }
+
+    const imageData = req.body.image || undefined;
+    let createdImage;
+    if (imageData) {
+      const createdImage = await query(images.createMinimal(req.body.image));
+      projectData.image = image.insertId;
+
+      if (req.files) {
+        fileUtils.saveFile(req.files.file, createdImage.insertId);
+      }
+    }
+    
+    const createdProject = await query(projects.create(projectData));
 
     const json = {};
     json.status = HttpStatus.CREATED;
-    json.data = {
-      projectId: project.insertId,
-      imageId: image.insertId,
+    json.data = {};
+    if (createdProject) {
+      json.data.projectId = createdProject.insertId;
+    }
+    if (createdImage) {
+      json.data.imageId = createdImage.insertId;
     }
     return json;
   } catch (err) {
@@ -219,8 +235,15 @@ export async function updateContact(req) {
 }
 
 // TODO delete also images from fs
+// DELETE
 export async function deleteProject(req) {
+  if (!req.params.id) {
+    return handleNotModified();
+  }
+
   try {
+    const { id } = req.params;
+    await query(images.getAllFileNamesByProjectId(id)).then(images => images.map(img => fileUtils.deleteFileById(img.id)));
     await query(images.deleteAllByProjectId(req.params.id));
     await query(projects.deleteOne(req.params.id));
     
