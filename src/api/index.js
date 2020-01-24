@@ -215,6 +215,10 @@ export async function updateContact(req) {
     const imageData = req.body.image ? JSON.parse(req.body.image) : undefined;
     const contactData = req.body.contact ? JSON.parse(req.body.contact) : undefined;
 
+    if (!imageData && !contactData) {
+      return handleNotModified();
+    }
+
     // A file already exists
     if (imageData && imageData.id) {
       const { id, ...data } = imageData;
@@ -228,7 +232,9 @@ export async function updateContact(req) {
     // No file exists yet
     if (imageData && !imageData.id) {
       const createdImage = await query(images.createMinimal(imageData));
-      contactData.image = createdImage.insertId;
+      if (contactData) {
+        contactData.image = createdImage.insertId;
+      }
 
       if (req.files) {
         fileUtils.saveFile(req.files.file, createdImage.insertId);
@@ -240,7 +246,7 @@ export async function updateContact(req) {
     }
 
     const json = {};
-    json.status = !imageData && !contactData ? HttpStatus.NOT_MODIFIED : HttpStatus.OK;
+    json.status = HttpStatus.OK;
     return json;
   } catch (err) {
     return handleError(err);
