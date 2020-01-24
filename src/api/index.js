@@ -126,13 +126,55 @@ export async function createContact(req) {
   }
 }
 
-export async function updateProjectMeta(req) {}
-// router.patch('/projects/:id', async function(req, res) {
-//   console.log('@patch project', req.params.id, req.body);
-//   const result = await query(projects.update(req.params.id, req.body));
-//   console.log('@patch after', result);
-//   handleResponse(res, result);
-// });
+// PATCH
+export async function updateProjectMeta(req) {
+  if (!req.params.id) {
+    return handleNotModified();
+  }
+  if (!req.body.project && !req.body.image) {
+    return handleNotModified();
+  }
+
+  try {
+  const id = req.params.id;
+  const projectData = req.body.project ? JSON.parse(req.body.project) : undefined;
+  const imageData = req.body.image ? JSON.parse(req.body.image) : undefined;
+
+  if (imageData) {
+    // A file already exists
+    if (imageData && imageData.id) {
+      const { id, ...data } = imageData;
+      if (req.files) {
+        fileUtils.deleteFileById(id);
+        fileUtils.saveFile(req.files.file, id);
+      }
+      await query(images.update(id, data));
+    }
+    
+    // No file exists yet
+    if (imageData && !imageData.id) {
+      const createdImage = await query(images.createMinimal(imageData));
+      if (projectData) {
+        projectData.image = createdImage.insertId;
+      }
+
+      if (req.files) {
+        fileUtils.saveFile(req.files.file, createdImage.insertId);
+      }
+    }
+  }
+
+  if (projectData) {
+    await query(projects.update(id, projectData));
+  }
+  
+  const json = {};
+  json.code = HttpStatus.OK;
+  return json;
+  } catch (err) {
+    return handleError(err);
+  }
+}
 
 // router.patch('/images/:id', async function(req, res) {
 //   const result = await query(images.update(req.params.id, req.body));

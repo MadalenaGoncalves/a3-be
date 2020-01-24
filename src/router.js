@@ -47,6 +47,11 @@ router.post('/contacts', async function(req, res) {
 });
 
 
+// PATCH
+router.patch('/projects/:id/meta', async function(req, res) {
+  const result = await api.updateProjectMeta(req);
+  handleResponse(res, result);
+});
 
 router.patch('/contacts/:id', async function(req, res) {
   const result = await api.updateContact(req);
